@@ -31,3 +31,7 @@ notebook>=6.4.0
 opencv-python-headless>=4.5.3.20210927
 pytesseract>=0.3.8
 easyocr>=1.4.1
+
+# OpenAI and other LLMs
+openai>=1.0.0
+google-generativeai>=0.3.0  # for Gemini 
