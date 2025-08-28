@@ -1,0 +1,21 @@
+{
+  "features": [
+    "reaction_speed_diff",
+    "stamina_diff",
+    "strength_diff",
+    "offense_diff",
+    "defense_diff",
+    "combat_skills_diff",
+    "battle_iq_diff",
+    "armament_haki_diff",
+    "observation_haki_diff",
+    "experience_diff",
+    "conqueror_present",
+    "conqueror_impact"
+  ],
+  "classes": [
+    "draw",
+    "loss",
+    "victory"
+  ]
+}
