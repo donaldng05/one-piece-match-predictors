@@ -14,7 +14,7 @@ __pycache__/
 
 # Data files
 data/raw/*
-data/processed/*
+data/processed/top_100_characters
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 
