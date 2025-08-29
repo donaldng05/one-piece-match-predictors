@@ -276,25 +276,28 @@ def get_prediction(fighter1_name, fighter2_name):
         fighter1_stats = get_character_stats(fighter1_name)
         fighter2_stats = get_character_stats(fighter2_name)
 
-        # Stop if either character not found
         if not fighter1_stats or not fighter2_stats:
             st.error("❌ Cannot proceed: One or both characters not found in database")
-            st.stop()  # This will stop the app execution
             return None
 
-        # API endpoint
-        api_url = "http://localhost:8000/predict"
+        # API URLs
+        local_api_url = "http://localhost:8000/predict"
+        railway_api_url = (
+            "https://one-piece-match-predictors-production.up.railway.app/predict"
+        )
 
-        # Format the payload according to the API specification
         payload = {"fighter_1": fighter1_stats, "fighter_2": fighter2_stats}
 
-        response = requests.post(api_url, json=payload, timeout=30)
-
-        if response.status_code == 200:
+        # Try local API first, then fallback to Railway
+        try:
+            response = requests.post(local_api_url, json=payload, timeout=5)
+            response.raise_for_status()
             return response.json()
-        else:
-            st.error(f"API Error: {response.status_code} - {response.text}")
-            return None
+        except:
+            # Fallback to Railway API
+            response = requests.post(railway_api_url, json=payload, timeout=30)
+            response.raise_for_status()
+            return response.json()
 
     except Exception as e:
         st.error(f"Error calling prediction API: {str(e)}")

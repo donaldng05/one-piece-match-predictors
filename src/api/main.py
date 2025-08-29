@@ -17,7 +17,11 @@ app = FastAPI(
 # Add CORS middleware for Streamlit
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with Streamlit app URL
+    allow_origins=[
+        "http://localhost:8501",  # Local Streamlit development
+        "https://one-piece-match-predictors.streamlit.app/",  # Replace with your actual URL
+        "https://*.streamlit.app",  # Allow any Streamlit Cloud app (optional)
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,16 +37,16 @@ try:
     possible_paths = [
         os.path.join(MODEL_DIR, "svm_fight_predictor.pkl"),
         os.path.join(".", MODEL_DIR, "svm_fight_predictor.pkl"),
-        "svm_fight_predictor.pkl"  # If moved to root
+        "svm_fight_predictor.pkl",  # If moved to root
     ]
-    
+
     model_data = None
     for path in possible_paths:
         if os.path.exists(path):
             model_data = joblib.load(path)
             print(f"✅ Models loaded successfully from {path}")
             break
-    
+
     if model_data:
         svm_model = model_data["model"]
         scaler = model_data["scaler"]
@@ -50,7 +54,7 @@ try:
         MODEL_AVAILABLE = True
     else:
         print("⚠️ Model files not found, using fallback prediction")
-        
+
 except Exception as e:
     print(f"❌ Error loading models: {e}")
     print("⚠️ Using fallback prediction method")
@@ -149,7 +153,7 @@ def calculate_features(fighter_1: FighterStats, fighter_2: FighterStats) -> np.n
 @app.post("/predict", response_model=PredictionResponse)
 async def predict_fight(request: FightPredictionRequest):
     """Predict the outcome of a fight between two characters."""
-    
+
     try:
         if MODEL_AVAILABLE and svm_model is not None:
             # Use your ML model
@@ -158,16 +162,19 @@ async def predict_fight(request: FightPredictionRequest):
             prediction_encoded = svm_model.predict(features_scaled)[0]
             prediction = label_encoder.inverse_transform([prediction_encoded])[0]
             probabilities = svm_model.predict_proba(features_scaled)[0]
-            prob_dict = {label: float(prob) for label, prob in zip(label_encoder.classes_, probabilities)}
+            prob_dict = {
+                label: float(prob)
+                for label, prob in zip(label_encoder.classes_, probabilities)
+            }
             confidence = float(max(probabilities))
         else:
             # Fallback: Simple stats-based prediction
             f1_stats = request.fighter_1.model_dump()
             f2_stats = request.fighter_2.model_dump()
-            
+
             f1_total = sum(f1_stats.values())
             f2_total = sum(f2_stats.values())
-            
+
             if f1_total > f2_total:
                 prediction = "victory"
                 confidence = min(0.95, 0.5 + abs(f1_total - f2_total) / 1000)
@@ -177,17 +184,19 @@ async def predict_fight(request: FightPredictionRequest):
             else:
                 prediction = "draw"
                 confidence = 0.5
-            
+
             prob_dict = {
                 "victory": confidence if prediction == "victory" else 1 - confidence,
                 "loss": confidence if prediction == "loss" else 1 - confidence,
-                "draw": confidence if prediction == "draw" else 0.1
+                "draw": confidence if prediction == "draw" else 0.1,
             }
 
         # Calculate fighter advantages
         f1_stats = request.fighter_1.model_dump()
         f2_stats = request.fighter_2.model_dump()
-        advantages = {stat: round(f1_stats[stat] - f2_stats[stat], 2) for stat in f1_stats.keys()}
+        advantages = {
+            stat: round(f1_stats[stat] - f2_stats[stat], 2) for stat in f1_stats.keys()
+        }
 
         # Generate summary
         if prediction == "victory":
