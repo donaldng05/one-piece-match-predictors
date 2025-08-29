@@ -1,0 +1,49 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+onepiecefightoutcome/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# Exclude large data files but keep models
+data/raw/
+*.csv
+*.json
+# Keep model files - they're small
+# *.pkl  <- commented out to keep models
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs/
+notebooks/
+.ipynb_checkpoints
+
+# Virtual environments
+onepiecefightoutcome/

@@ -22,6 +22,7 @@ data/processed/top_100_characters
 *.pkl
 *.pth
 *.h5
+!src/models/svm_fight_predictor.pkl
 
 # Logs
 *.log
