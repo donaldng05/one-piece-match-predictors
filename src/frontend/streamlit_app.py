@@ -62,14 +62,16 @@ st.markdown(
 def load_character_data():
     """Load character data from CSV"""
     try:
-        # Try to load from the data/processed directory
+        # Update the path to match your repo structure
         df = pd.read_csv("data/processed/character_data_cleaned.csv")
         return df
     except FileNotFoundError:
-        st.error(
-            "❌ Could not find character_data_cleaned.csv. Please ensure the file exists in data/processed/"
-        )
-        return None
+        try:
+            # Fallback path in case the app runs from src/frontend directory
+            df = pd.read_csv("../../data/processed/character_data_cleaned.csv")
+            return df
+        except FileNotFoundError:
+            return None
 
 
 # Load the data
