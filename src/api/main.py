@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 import joblib
 import numpy as np
@@ -13,15 +14,24 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Add CORS middleware for Streamlit
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace with Streamlit app URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Load models at startup
 MODEL_DIR = "src/models"
 try:
     # Load the dictionary containing all components
     model_data = joblib.load(os.path.join(MODEL_DIR, "svm_fight_predictor.pkl"))
-    svm_model = model_data["model"]          # Extract the actual SVM model
-    scaler = model_data["scaler"]            # Extract the scaler  
+    svm_model = model_data["model"]  # Extract the actual SVM model
+    scaler = model_data["scaler"]  # Extract the scaler
     label_encoder = model_data["label_encoder"]  # Extract the label encoder
-    
+
     print("✅ Models loaded successfully")
 except Exception as e:
     print(f"❌ Error loading models: {e}")
