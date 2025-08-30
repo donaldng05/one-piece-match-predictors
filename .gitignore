@@ -19,10 +19,9 @@ data/processed/top_100_characters
 !data/processed/.gitkeep
 
 # Model files
-*.pkl
+pkl
 *.pth
 *.h5
-!src/models/svm_fight_predictor.pkl
 
 # Logs
 *.log
